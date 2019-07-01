@@ -8,8 +8,28 @@ Outputs = #config.ButtonNames
 
 
 --##########################################################
--- NEAT Functions
+-- NEAT Functions WIP
 --##########################################################
+
+
+
+--##########################################################
+-- Display Checks WIP
+--##########################################################
+
+
+
+--##########################################################
+-- File Management WIP
+--##########################################################
+
+
+
+--##########################################################
+-- Reinforcement Learning WIP
+--##########################################################
+
+
 
 function newInnovation()
 	pool.innovation = pool.innovation + 1
@@ -645,9 +665,6 @@ function initializePool()
 end
 
 
---##########################################################
--- Display Checks
---##########################################################
 
 function initializeRun()
 	savestate.load(config.NeatConfig.Filename);
@@ -660,9 +677,12 @@ function initializeRun()
 	pool.currentFrame = 0
 	timeout = config.NeatConfig.TimeoutConstant
 	game.clearJoypad()
-	startCoins = game.getCoins()
-	startScore = game.getScore()
-	startLives = game.getLives()
+--	startCoins = game.getCoins()
+	startMissiles = game.getMissiles()
+	startSuperMissiles = game.getSuperMissiles()
+	startBombs = game.getBombs()
+	startTanks = game.getTanks()
+--	startLives = game.getLives()
 	checkMarioCollision = true
 	marioHitCounter = 0
 	powerUpCounter = 0
@@ -695,9 +715,6 @@ function evaluateCurrent()
 end
 
 
---##########################################################
--- File Management
---##########################################################
 
 if pool == nil then
 	initializePool()
@@ -1022,9 +1039,6 @@ function onExit()
 end
 
 
---##########################################################
--- Reinforcement Learning
---##########################################################
 
 writeFile(config.PoolDir.."temp.pool")
 
@@ -1038,8 +1052,11 @@ MeasuredLabel = forms.label(form, "Measured: " .. "", 330, 5)
 FitnessLabel = forms.label(form, "Fitness: " .. "", 5, 30)
 MaxLabel = forms.label(form, "Max: " .. "", 130, 30)
 
-CoinsLabel = forms.label(form, "Coins: " .. "", 5, 65)
-ScoreLabel = forms.label(form, "Score: " .. "", 130, 65, 90, 14)
+--CoinsLabel = forms.label(form, "Coins: " .. "", 5, 65)
+MissilesLabel = forms.label(form, "Missiles: " .. "", 130, 65, 90, 14)
+-- SuperMissilesLabel = forms.label(form, "Super Missiles: " .. "", 130, 65, 90, 14)
+-- BombLabel = forms.label(form, "Power Bombs: " .. "", 130, 65, 90, 14)
+-- TankLabel = forms.label(form, "Reserve Tanks: " .. "", 130, 65, 90, 14)
 LivesLabel = forms.label(form, "Lives: " .. "", 130, 80, 90, 14)
 DmgLabel = forms.label(form, "Damage: " .. "", 230, 65, 110, 14)
 PowerUpLabel = forms.label(form, "PowerUp: " .. "", 230, 80, 110, 14)
@@ -1072,8 +1089,8 @@ while true do
 	joypad.set(controller)
 
 	game.getPositions()
-	if marioX > rightmost then
-		rightmost = marioX
+	if samusX > rightmost then
+		rightmost = samusX
 		timeout = config.NeatConfig.TimeoutConstant
 	end
 	
@@ -1106,20 +1123,22 @@ while true do
 	local timeoutBonus = pool.currentFrame / 4
 	if timeout + timeoutBonus <= 0 then
 	
-		local coins = game.getCoins() - startCoins
-		local score = game.getScore() - startScore
+--		local coins = game.getCoins() - startCoins
+--		local score = game.getMissiles() - startMissiles
+--		local bombs = game.getBombs() - startBombs
+--		local tanks = game.getTanks() - startTanks
 		
 		--console.writeline("Coins: " .. coins .. " score: " .. score)
 
-		local coinScoreFitness = (coins * 50) + (score * 0.2)
-		if (coins + score) > 0 then 
-			console.writeline("Coins and Score added " .. coinScoreFitness .. " fitness")
-		end
+--		local coinScoreFitness = (coins * 50) + (score * 0.2)
+--		if (coins + score) > 0 then 
+--			console.writeline("Coins and Score added " .. coinScoreFitness .. " fitness")
+--		end
 		
 		local hitPenalty = marioHitCounter * 100
 		local powerUpBonus = powerUpCounter * 100
 	
-		local fitness = coinScoreFitness - hitPenalty + powerUpBonus + rightmost - pool.currentFrame / 2
+--		local fitness = coinScoreFitness - hitPenalty + powerUpBonus + rightmost - pool.currentFrame / 2
 
 		if startLives < Lives then
 			local ExtraLiveBonus = (Lives - startLives)*1000
@@ -1169,8 +1188,11 @@ while true do
 	forms.settext(GenomeLabel, "Genome: " .. pool.currentGenome)
 	forms.settext(MaxLabel, "Max: " .. math.floor(pool.maxFitness))
 	forms.settext(MeasuredLabel, "Measured: " .. math.floor(measured/total*100) .. "%")
-	forms.settext(CoinsLabel, "Coins: " .. (game.getCoins() - startCoins))
-	forms.settext(ScoreLabel, "Score: " .. (game.getScore() - startScore))
+--	forms.settext(CoinsLabel, "Coins: " .. (game.getCoins() - startCoins))
+	forms.settext(MissilesLabel, "Missiles: " .. (game.getMissiles() - startMissiles))
+	forms.settext(SuperMissilesLabel, "Super Missiles: " .. (game.getSuperMissiles() - startSuperMissiles))
+	forms.settext(BombsLabel, "Power Bombs: " .. (game.getBombs() - startBombs))
+	forms.settext(TanksLabel, "Reserve Tanks: " .. (game.getTanks() - startTanks))
 	forms.settext(LivesLabel, "Lives: " .. Lives)
 	forms.settext(DmgLabel, "Damage: " .. marioHitCounter)
 	forms.settext(PowerUpLabel, "PowerUp: " .. powerUpCounter)
